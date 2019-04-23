@@ -46,6 +46,74 @@ class ScheduleController extends Controller
 
     }
 
+    public function cronJob()
+    {
+        $listUser = Users::where('status', 'LIVE')
+            ->where('updated_at', '<', date("Y-m-d H:i", time() - (6 * 60 * 60)))
+            ->inRandomOrder()
+            ->limit(1)
+            ->get();
+
+        echo response()->json($listUser);
+
+        foreach ($listUser as $user)
+        {
+            $isLogin = $this->checkLogin($user->studentCode, encryptTDMU($user->password));
+            if ($isLogin != self::ERROR_VALIDATE_LOGIN_CODE)
+            {
+                // Update Thời Khóa Biểu
+                $ThoiKhoaBieuFull = $this->getThoiKhoaBieu(getWeekTDMU());
+                if ($ThoiKhoaBieuFull != self::ERROR_GET_DATA_ERROR) {
+                    Thoikhoabieu::where('user', $user->studentCode)->delete();
+                    foreach ($ThoiKhoaBieuFull as $day) {
+                        Thoikhoabieu::create(
+                            [
+                                'user' => $user->studentCode,
+                                'MaMH' => $day['MaMH'],
+                                'TenMH' => $day['TenMH'],
+                                'Phong' => $day['Phong'],
+                                'Thu' => $day['Thu'],
+                                'TietBatDau' => $day['TietBatDau'],
+                                'SoTiet' => $day['SoTiet'],
+                                'GiangVien' => $day['GiangVien'],
+                                'Lop' => $day['Lop']
+                            ]
+                        );
+                    }
+                }
+
+
+                //Update Lịch Thi
+                $LichThi = self::getLichThiTDMU();
+                if ($ThoiKhoaBieuFull != self::ERROR_GET_DATA_ERROR) {
+                    Lichthi::where('user', $user->studentCode)->delete();
+                    foreach ($LichThi as $subject) {
+                        Lichthi::create(
+                            [
+                                'user' => $user->studentCode,
+                                'MaMH' => $subject['MaMH'],
+                                'TenMH' => $subject['TenMH'],
+                                'Nhom' => $subject['Nhom'],
+                                'To' => $subject['To'],
+                                'SiSo' => $subject['SiSo'],
+                                'NgayThi' => $subject['NgayThi'],
+                                'TGThi' => $subject['TGThi'],
+                                'SoPhut' => $subject['SoPhut'],
+                                'PhongThi' => $subject['PhongThi'],
+                                'HinhThuc' => $subject['HinhThuc'],
+                            ]
+                        );
+                    }
+                }
+
+                // End
+            } else {
+                Users::where('studentCode', $user->studentCode)
+                    ->update(['status' => 'ERROR']);
+            }
+        }
+    }
+
     public function setupAccount(Request $request)
     {
         $messengerID = $request->input('messengerID');
@@ -143,6 +211,10 @@ class ScheduleController extends Controller
                 Users::where('messengerID', $messengerID)->delete();
             }
             $LichThi = self::getLichThiTDMU();
+
+            if ($LichThi == self::ERROR_GET_DATA_ERROR)
+                return sendTextMessage("Lỗi lấy dữ liệu từ trường, vui lòng thử lại sau !");
+
             Lichthi::where('user', $user->studentCode)->delete();
             foreach ($LichThi as $subject)
             {
@@ -219,7 +291,7 @@ class ScheduleController extends Controller
             $ThoiKhoaBieuFull = $this->getThoiKhoaBieu($week);
 
             if ($ThoiKhoaBieuFull == self::ERROR_GET_DATA_ERROR)
-                return self::ERROR_GET_DATA_ERROR;
+                return sendTextMessage("Lỗi lấy dữ liệu từ trường, vui lòng thử lại sau !");
 
             Thoikhoabieu::where('user', $user->studentCode)->delete();
             foreach ($ThoiKhoaBieuFull as $day) {

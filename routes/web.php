@@ -11,6 +11,9 @@
 |
 */
 
+
+
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
@@ -19,5 +22,5 @@ $router->group(['prefix' => 'schedule'], function () use ($router) {
     $router->get('get/{messengerID}',  ['uses' => 'ScheduleController@getTKB']);
     $router->get('setup',  ['uses' => 'ScheduleController@setupAccount']);
     $router->get('lichthi/{messengerID}', ['uses' => 'ScheduleController@getLichThi']);
-    $router->get('update', ['uses' => 'ScheduleController@index']);
+    $router->get('cron', ['uses' => 'ScheduleController@cronJob']);
 });
