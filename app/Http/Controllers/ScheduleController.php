@@ -127,14 +127,11 @@ class ScheduleController extends Controller
     public function getLichThi($messengerID)
     {
         $user = Users::where('messengerID', $messengerID)->first();
-
         if ($user == NULL)
         {
             return self::firtUse();
         }
-
         $LichThi = Lichthi::where('user', $user->studentCode)->get();
-
         if ($LichThi->isEmpty())
         {
             unset($LichThi);
@@ -145,11 +142,8 @@ class ScheduleController extends Controller
                 return sendTextMessage("Có lẽ bạn đã đổi mật khẩu tài khoản của mình, vui lòng cài đặt lại nhé !");
                 Users::where('messengerID', $messengerID)->delete();
             }
-
             $LichThi = self::getLichThiTDMU();
-
             Lichthi::where('user', $user->studentCode)->delete();
-
             foreach ($LichThi as $subject)
             {
                 Lichthi::create(
@@ -183,7 +177,6 @@ class ScheduleController extends Controller
             $messege .= "\tHình thức: " . $subject['HinhThuc'] . PHP_EOL;
             $messege .= PHP_EOL;
         }
-
         return sendTextMessage($messege);
     }
 
