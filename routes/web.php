@@ -18,5 +18,6 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'schedule'], function () use ($router) {
     $router->get('get/{messengerID}',  ['uses' => 'ScheduleController@getTKB']);
     $router->get('setup',  ['uses' => 'ScheduleController@setupAccount']);
+    $router->get('lichthi/{messengerID}', ['uses' => 'ScheduleController@getLichThi']);
     $router->get('update', ['uses' => 'ScheduleController@index']);
 });

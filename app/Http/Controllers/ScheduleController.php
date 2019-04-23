@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lichthi;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use App\Models\Thoikhoabieu;
@@ -121,6 +122,69 @@ class ScheduleController extends Controller
         $blockName = 'Setup';
         $blockTitle = 'Tiến hành cài đặt';
         return sendButtonMessage($messege, $blockName, $blockTitle);
+    }
+
+    public function getLichThi($messengerID)
+    {
+        $user = Users::where('messengerID', $messengerID)->first();
+
+        if ($user == NULL)
+        {
+            return self::firtUse();
+        }
+
+        $LichThi = Lichthi::where('user', $user->studentCode)->get();
+
+        if ($LichThi->isEmpty())
+        {
+            unset($LichThi);
+            $passwordEncrypt = encryptTDMU($user->password);
+            $isLogin = $this->checkLogin($user->studentCode, $passwordEncrypt);
+            if ($isLogin == self::ERROR_VALIDATE_LOGIN_CODE)
+            {
+                return sendTextMessage("Có lẽ bạn đã đổi mật khẩu tài khoản của mình, vui lòng cài đặt lại nhé !");
+                Users::where('messengerID', $messengerID)->delete();
+            }
+
+            $LichThi = self::getLichThiTDMU();
+
+            Lichthi::where('user', $user->studentCode)->delete();
+
+            foreach ($LichThi as $subject)
+            {
+                Lichthi::create(
+                    [
+                        'user' => $user->studentCode,
+                        'MaMH' => $subject['MaMH'],
+                        'TenMH' => $subject['TenMH'],
+                        'Nhom' => $subject['Nhom'],
+                        'To' => $subject['To'],
+                        'SiSo' => $subject['SiSo'],
+                        'NgayThi' => $subject['NgayThi'],
+                        'TGThi' => $subject['TGThi'],
+                        'SoPhut' => $subject['SoPhut'],
+                        'PhongThi' => $subject['PhongThi'],
+                        'HinhThuc' => $subject['HinhThuc'],
+                    ]
+                );
+            }
+        }
+
+        $testSchedule = json_decode(json_encode($LichThi), true);
+        $numberIcon = array('1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟');
+        $i = 0;
+        $messege = '🚀 Lịch Thi Của Bạn Là: 🚀' . PHP_EOL . PHP_EOL;
+        foreach($testSchedule as $subject) {
+            $messege .= '👉  ' . $numberIcon[$i++] . '. ' . mb_strtoupper($subject['TenMH'], 'UTF-8') . PHP_EOL;
+            $messege .= "\tNgày thi: " . $subject['NgayThi'] . PHP_EOL;
+            $messege .= "\tThời gian thi: " . $subject['TGThi'] . PHP_EOL;
+            $messege .= "\tSố phút: " . $subject['SoPhut'] . ' phút' . PHP_EOL;
+            $messege .= "\tPhòng thi: " . $subject['PhongThi'] . PHP_EOL;
+            $messege .= "\tHình thức: " . $subject['HinhThuc'] . PHP_EOL;
+            $messege .= PHP_EOL;
+        }
+
+        return sendTextMessage($messege);
     }
 
     public function getTKB($messengerID)
@@ -351,4 +415,37 @@ class ScheduleController extends Controller
 
         return self::ERROR_GET_DATA_ERROR;
     }
+
+    protected function getLichThiTDMU()
+    {
+        $client = new Client();
+        $data = [
+            'manhhk' => 'MaNHHK_20182',
+            'page' => '1',
+        ];
+
+        $url = 'http://dkmh.tdmu.edu.vn/EPM/GetDanhSachLichThiSV';
+
+        $res = $client->request('POST', $url, [
+            'cookies' => $this->cookieJar,
+            'body' => json_encode($data),
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
+                'Accept'     => 'application/json, text/javascript, */*; q=0.01',
+                'Content-Type' => 'application/json;charset=UTF-8',
+                'X-Requested-With' => 'XMLHttpRequest'
+            ]
+        ]);
+
+        if ($res->getStatusCode() == 200)
+        {
+            $response = parseDataLichThi($res->getBody());
+            if (empty($response))
+                return self::ERROR_GET_DATA_ERROR;
+            return $response;
+        }
+
+        return self::ERROR_GET_DATA_ERROR;
+    }
+
 }

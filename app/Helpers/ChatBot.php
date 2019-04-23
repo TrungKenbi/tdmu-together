@@ -233,3 +233,55 @@ if (!function_exists('parseDataName')) {
     }
 }
 
+
+
+if (!function_exists('parseDataLichThi')) {
+    function parseDataLichThi($response)
+    {
+        $response = json_decode($response, true);
+        $data = $response[0];
+        $response = stripslashes($data);
+        $response = str_replace(array('rntt', 'rnt', 'rn'), array('', '', ''), $response);
+
+        $colName = array(
+            'MaMH',
+            'TenMH',
+            'Nhom',
+            'To',
+            'SiSo',
+            'NgayThi',
+            'TGThi',
+            'SoPhut',
+            'PhongThi',
+            'HinhThuc',
+            'Xem'
+        );
+
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(mb_convert_encoding($response, 'HTML-ENTITIES', 'UTF-8'));
+        $Detail = $dom->getElementsByTagName('td');
+
+        foreach($Detail as $sNodeDetail)
+            $ahuhu[] = trim($sNodeDetail->textContent);
+
+        $j = 0;
+        for($i = 12; $i < count($ahuhu); $i++)
+        {
+            $ii = ($i - 12) % 11;
+
+            if ($ii >= 10) {
+                $j++;
+                continue;
+            }
+
+
+            $testSchedule[$j][$colName[$ii]] = $ahuhu[$i];
+            if ($ii == 10) {
+                $j++;
+            }
+        }
+
+        return $testSchedule;
+    }
+}
