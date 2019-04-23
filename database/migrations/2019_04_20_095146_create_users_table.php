@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->string('studentName', 100);
             $table->string('password', 50);
             $table->string('status', 10);
-            $table->timestamp('updateTime');
             $table->timestamps();
         });
     }

@@ -16,7 +16,6 @@ class Users extends Model {
         'password',
         'studentName',
         'status',
-        'updateTime',
     ];
 
     // Các thuộc tính được bảo vệ, không cập nhật vào cơ sở dữ liệu

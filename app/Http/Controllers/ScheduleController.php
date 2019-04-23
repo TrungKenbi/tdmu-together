@@ -127,7 +127,7 @@ class ScheduleController extends Controller
     {
         $dayOfWeek = date("N", time()) + 1;
 
-        $user = Users::where('messengerID', $messengerID)->first('studentCode');
+        $user = Users::where('messengerID', $messengerID)->first();
 
         if ($user == NULL)
         {
@@ -140,6 +140,47 @@ class ScheduleController extends Controller
                 ->where('Thu' , '>=', $dayOfWeek)
                 ->where('Thu' , '<=', $dayOfWeek + 1)
                 ->get();
+
+        if ($ThoiKhoaBieu == NULL)
+        {
+            $passwordEncrypt = encryptTDMU($user->password);
+            $isLogin = $this->checkLogin($user->studentCode, $passwordEncrypt);
+            if ($isLogin == self::ERROR_VALIDATE_LOGIN_CODE)
+            {
+                return sendTextMessage("Có lẽ bạn đã đổi mật khẩu tài khoản của mình, vui lòng cài đặt lại nhé !");
+                Users::where('messengerID', $messengerID)->delete();
+            }
+
+            if ($user->studentName == NULL)
+            {
+                $user->studentName = $this->getNameStudent();
+                $user->save();
+            }
+
+            $ThoiKhoaBieu = $this->getThoiKhoaBieu($week);
+
+            if ($ThoiKhoaBieu == self::ERROR_GET_DATA_ERROR)
+                return self::ERROR_GET_DATA_ERROR;
+
+            Thoikhoabieu::where('user', $user->studentCode)->delete();
+            foreach ($ThoiKhoaBieu as $day) {
+                Thoikhoabieu::create(
+                    [
+                        'user' => $user->studentCode,
+                        'MaMH' => $day['MaMH'],
+                        'TenMH' => $day['TenMH'],
+                        'Phong' => $day['Phong'],
+                        'Thu' => $day['Thu'],
+                        'TietBatDau' => $day['TietBatDau'],
+                        'SoTiet' => $day['SoTiet'],
+                        'GiangVien' => $day['GiangVien'],
+                        'Lop' => $day['Lop']
+                    ]
+                );
+            }
+
+        }
+
         $arrayTKB = json_decode(json_encode($ThoiKhoaBieu), true);
         usort($arrayTKB, 'sortTKB');
 
