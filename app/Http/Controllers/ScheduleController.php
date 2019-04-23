@@ -141,8 +141,9 @@ class ScheduleController extends Controller
                 ->where('Thu' , '<=', $dayOfWeek + 1)
                 ->get();
 
-        if ($ThoiKhoaBieu == NULL)
+        if ($ThoiKhoaBieu->isEmpty())
         {
+            unset($ThoiKhoaBieu);
             $passwordEncrypt = encryptTDMU($user->password);
             $isLogin = $this->checkLogin($user->studentCode, $passwordEncrypt);
             if ($isLogin == self::ERROR_VALIDATE_LOGIN_CODE)
@@ -157,13 +158,14 @@ class ScheduleController extends Controller
                 $user->save();
             }
 
-            $ThoiKhoaBieu = $this->getThoiKhoaBieu($week);
+            $week = getWeekTDMU();
+            $ThoiKhoaBieuFull = $this->getThoiKhoaBieu($week);
 
-            if ($ThoiKhoaBieu == self::ERROR_GET_DATA_ERROR)
+            if ($ThoiKhoaBieuFull == self::ERROR_GET_DATA_ERROR)
                 return self::ERROR_GET_DATA_ERROR;
 
             Thoikhoabieu::where('user', $user->studentCode)->delete();
-            foreach ($ThoiKhoaBieu as $day) {
+            foreach ($ThoiKhoaBieuFull as $day) {
                 Thoikhoabieu::create(
                     [
                         'user' => $user->studentCode,
@@ -178,7 +180,11 @@ class ScheduleController extends Controller
                     ]
                 );
             }
-
+            $ThoiKhoaBieu =
+                Thoikhoabieu::where('user', $user->studentCode)
+                    ->where('Thu' , '>=', $dayOfWeek)
+                    ->where('Thu' , '<=', $dayOfWeek + 1)
+                    ->get();
         }
 
         $arrayTKB = json_decode(json_encode($ThoiKhoaBieu), true);
