@@ -275,7 +275,9 @@ class ScheduleController extends Controller
                 ->get();
         }
 
-        if ($ThoiKhoaBieu->isEmpty())
+        $numTKB = Thoikhoabieu::where('user', $user->studentCode)->count();
+
+        if ($numTKB == 0)
         {
             unset($ThoiKhoaBieu);
             $passwordEncrypt = encryptTDMU($user->password);
