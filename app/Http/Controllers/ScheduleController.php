@@ -264,11 +264,16 @@ class ScheduleController extends Controller
         }
 
         // Get môn học hôm nay và ngày mai
-        $ThoiKhoaBieu =
-            Thoikhoabieu::where('user', $user->studentCode)
-                ->where('Thu' , '>=', $dayOfWeek)
-                ->where('Thu' , '<=', $dayOfWeek + 1)
+        if ($dayOfWeek == 8) // Chủ nhật
+        {
+            $ThoiKhoaBieu = Thoikhoabieu::where('user', $user->studentCode)
+                ->whereIn('8', '2')->get();
+        } else {
+            $ThoiKhoaBieu = Thoikhoabieu::where('user', $user->studentCode)
+                ->where('Thu', '>=', $dayOfWeek)
+                ->where('Thu', '<=', $dayOfWeek + 1)
                 ->get();
+        }
 
         if ($ThoiKhoaBieu->isEmpty())
         {
