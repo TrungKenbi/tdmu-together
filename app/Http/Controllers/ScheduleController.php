@@ -267,7 +267,7 @@ class ScheduleController extends Controller
         if ($dayOfWeek == 8) // Chủ nhật
         {
             $ThoiKhoaBieu = Thoikhoabieu::where('user', $user->studentCode)
-                ->whereIn('8', '2')->get();
+                ->whereIn('Thu', ['8', '2'])->get();
         } else {
             $ThoiKhoaBieu = Thoikhoabieu::where('user', $user->studentCode)
                 ->where('Thu', '>=', $dayOfWeek)
