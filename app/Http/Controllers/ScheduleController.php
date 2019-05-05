@@ -275,53 +275,53 @@ class ScheduleController extends Controller
                 ->get();
         }
 
-        $numTKB = Thoikhoabieu::where('user', $user->studentCode)->count();
-
-        if ($numTKB == 0)
-        {
-            unset($ThoiKhoaBieu);
-            $passwordEncrypt = encryptTDMU($user->password);
-            $isLogin = $this->checkLogin($user->studentCode, $passwordEncrypt);
-            if ($isLogin == self::ERROR_VALIDATE_LOGIN_CODE)
-            {
-                return sendTextMessage("Có lẽ bạn đã đổi mật khẩu tài khoản của mình, vui lòng cài đặt lại nhé !");
-                Users::where('messengerID', $messengerID)->delete();
-            }
-
-            if ($user->studentName == NULL)
-            {
-                $user->studentName = $this->getNameStudent();
-                $user->save();
-            }
-
-            $week = getWeekTDMU();
-            $ThoiKhoaBieuFull = $this->getThoiKhoaBieu($week);
-
-            if ($ThoiKhoaBieuFull == self::ERROR_GET_DATA_ERROR)
-                return sendTextMessage("Lỗi lấy dữ liệu từ trường, vui lòng thử lại sau !");
-
-            Thoikhoabieu::where('user', $user->studentCode)->delete();
-            foreach ($ThoiKhoaBieuFull as $day) {
-                Thoikhoabieu::create(
-                    [
-                        'user' => $user->studentCode,
-                        'MaMH' => $day['MaMH'],
-                        'TenMH' => $day['TenMH'],
-                        'Phong' => $day['Phong'],
-                        'Thu' => $day['Thu'],
-                        'TietBatDau' => $day['TietBatDau'],
-                        'SoTiet' => $day['SoTiet'],
-                        'GiangVien' => $day['GiangVien'],
-                        'Lop' => $day['Lop']
-                    ]
-                );
-            }
-            $ThoiKhoaBieu =
-                Thoikhoabieu::where('user', $user->studentCode)
-                    ->where('Thu' , '>=', $dayOfWeek)
-                    ->where('Thu' , '<=', $dayOfWeek + 1)
-                    ->get();
-        }
+//        $numTKB = Thoikhoabieu::where('user', $user->studentCode)->count();
+//
+//        if ($numTKB == 0)
+//        {
+//            unset($ThoiKhoaBieu);
+//            $passwordEncrypt = encryptTDMU($user->password);
+//            $isLogin = $this->checkLogin($user->studentCode, $passwordEncrypt);
+//            if ($isLogin == self::ERROR_VALIDATE_LOGIN_CODE)
+//            {
+//                return sendTextMessage("Có lẽ bạn đã đổi mật khẩu tài khoản của mình, vui lòng cài đặt lại nhé !");
+//                Users::where('messengerID', $messengerID)->delete();
+//            }
+//
+//            if ($user->studentName == NULL)
+//            {
+//                $user->studentName = $this->getNameStudent();
+//                $user->save();
+//            }
+//
+//            $week = getWeekTDMU();
+//            $ThoiKhoaBieuFull = $this->getThoiKhoaBieu($week);
+//
+//            if ($ThoiKhoaBieuFull == self::ERROR_GET_DATA_ERROR)
+//                return sendTextMessage("Lỗi lấy dữ liệu từ trường, vui lòng thử lại sau !");
+//
+//            Thoikhoabieu::where('user', $user->studentCode)->delete();
+//            foreach ($ThoiKhoaBieuFull as $day) {
+//                Thoikhoabieu::create(
+//                    [
+//                        'user' => $user->studentCode,
+//                        'MaMH' => $day['MaMH'],
+//                        'TenMH' => $day['TenMH'],
+//                        'Phong' => $day['Phong'],
+//                        'Thu' => $day['Thu'],
+//                        'TietBatDau' => $day['TietBatDau'],
+//                        'SoTiet' => $day['SoTiet'],
+//                        'GiangVien' => $day['GiangVien'],
+//                        'Lop' => $day['Lop']
+//                    ]
+//                );
+//            }
+//            $ThoiKhoaBieu =
+//                Thoikhoabieu::where('user', $user->studentCode)
+//                    ->where('Thu' , '>=', $dayOfWeek)
+//                    ->where('Thu' , '<=', $dayOfWeek + 1)
+//                    ->get();
+//        }
 
         $arrayTKB = json_decode(json_encode($ThoiKhoaBieu), true);
         usort($arrayTKB, 'sortTKB');
