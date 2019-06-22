@@ -32,12 +32,9 @@ class ScheduleController extends Controller
 
     public function index ()
     {
-        //return response()->json($this->getAndSaveTKB('1824801030053', 'Trung0716'));
 
-        $username = '1824801030053';
-        $password = 'Trung0716';
-//        $ThoiKhoaBieu = Thoikhoabieu::where('user', $username)->get();
-//        echo json_encode($ThoiKhoaBieu);
+        $username = '1824801030000';
+        $password = 'khongcopass';
 
         $passwordEncrypt = encryptTDMU($password);
 
