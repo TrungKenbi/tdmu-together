@@ -145,7 +145,7 @@ if (!function_exists('getWeekTDMU'))
 {
     function getWeekTDMU()
     {
-        return date('W') + 19 + 1; // debug 1 tuần
+        return date('W') + 19;
     }
 }
 
