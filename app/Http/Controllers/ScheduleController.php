@@ -30,17 +30,9 @@ class ScheduleController extends Controller
     {
     }
 
-    public function index ()
+    public function index()
     {
-
-        $username = '1824801030000';
-        $password = 'khongcopass';
-
-        $passwordEncrypt = encryptTDMU($password);
-
-        $this->checkLogin($username, $passwordEncrypt);
-        return $this->getNameStudent();
-
+        return "TrungKenbi";
     }
 
     public function cronJob()
@@ -172,7 +164,7 @@ class ScheduleController extends Controller
             $messege = "Xin chào <3 " . $fullname . "\n"
             . "Chúc mừng bạn đã cài đặt thành công, bạn đã có thể sử dụng chức năng xem thời khoá biểu."
             ." Lưu ý: Mật khẩu của bạn đã được mã hoá trước khi được lưu vào cơ sở dữ liệu !\n\n"
-            . "🚀Chat Bot xây dựng bởi TrungKenbi !";
+            . "🚀 Chat Bot xây dựng bởi TrungKenbi !";
 
             return sendTextMessage($messege);
 
@@ -489,7 +481,7 @@ class ScheduleController extends Controller
     {
         $client = new Client();
         $data = [
-            'manhhk' => 'MaNHHK_20182',
+            'manhhk' => 'MaNHHK_20183',
             'page' => '1',
         ];
 
