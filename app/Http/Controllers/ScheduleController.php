@@ -430,7 +430,7 @@ class ScheduleController extends Controller
             'keyValue' => '',
             'textSearch' => '',
             'index' => '7',
-            'nhhk' => 'NHHK_20183', // Học kỳ
+            'nhhk' => 'NHHK_20183', // Học kỳ trong nawm
             'tuanBD' => 'Tuan_' . $week, // Tuần
             'widthscreen' => '979',
         ];
