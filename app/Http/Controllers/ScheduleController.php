@@ -73,6 +73,7 @@ class ScheduleController extends Controller
 
 
                 //Update Lịch Thi
+                /*
                 $LichThi = self::getLichThiTDMU();
                 if ($ThoiKhoaBieuFull != self::ERROR_GET_DATA_ERROR) {
                     Lichthi::where('user', $user->studentCode)->delete();
@@ -94,7 +95,7 @@ class ScheduleController extends Controller
                         );
                     }
                 }
-
+                */
                 // End
             } else {
                 Users::where('studentCode', $user->studentCode)
