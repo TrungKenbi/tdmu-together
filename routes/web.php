@@ -24,3 +24,7 @@ $router->group(['prefix' => 'schedule'], function () use ($router) {
     $router->get('lichthi/{messengerID}', ['uses' => 'ScheduleController@getLichThi']);
     $router->get('cron', ['uses' => 'ScheduleController@cronJob']);
 });
+
+$router->group(['prefix' => 'together'], function () use ($router) {
+    $router->get('/',  ['uses' => 'TogetherController@index']);
+});

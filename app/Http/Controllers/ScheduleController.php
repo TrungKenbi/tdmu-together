@@ -336,17 +336,18 @@ class ScheduleController extends Controller
 
         $messege = '';
         if ($numToday != 0) {
-            $messege .= "☑ MÔN HỌC HÔM NAY LÀ: \n";
+            $messege .= "☑️ MÔN HỌC HÔM NAY LÀ: \n";
             $messege .= $sringToday;
         } else
-        $messege .= "HÔM NAY KHÔNG CÓ MÔN HỌC NÀO CẢ";
+            $messege .= "❌ HÔM NAY LÀM GÌ PHẢI ĐI HỌC !";
 
         if ($numTomorrow != 0) {
-            $messege .= "\n\n☑ MÔN HỌC NGÀY MAI LÀ: \n";
+            $messege .= "\n☑️ MÔN HỌC NGÀY MAI LÀ: \n";
             $messege .= $stringTomorrow;
         } else
-            $messege .= "\n\nNGÀY MAI KHÔNG CÓ MÔN HỌC NÀO CẢ";
-        return sendTextMessage($messege);
+            $messege .= "\n❌ MAI NGHỈ Ở NHÀ NGỦ !";
+        $copyright = "\n\n⚒ *_TrungKenbi_* 🚀";
+        return sendTextMessage($messege . $copyright);
     }
 
     public function getAndSaveTKB($username = '', $password = '')

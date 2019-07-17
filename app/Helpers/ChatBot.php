@@ -206,13 +206,14 @@ if (!function_exists('printMessage'))
 {
     function printMessage ($MonHoc, $index)
     {
+        $numberIcon = array('1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟');
         $monHocName = explode(" (", $MonHoc['TenMH']);
         $mesage =
-            "👉  " . $index .
-            ". " . mb_strtoupper($monHocName[0], 'UTF-8') .
-            "\n\t + Thời gian: " . getTimeWithNumber($MonHoc['TietBatDau']) .
-            "\n\t + Phòng Học: " . $MonHoc['Phong'] .
-            "\n\t + Số Tiết: " . $MonHoc['SoTiet'] . "\n";
+            $numberIcon[$index-1] .
+            " " . mb_strtoupper($monHocName[0], 'UTF-8') .
+            "\n   + Thời gian: " . getTimeWithNumber($MonHoc['TietBatDau']) .
+            "\n   + Phòng Học: " . $MonHoc['Phong'] .
+            "\n   + Số Tiết: " . $MonHoc['SoTiet'] . "\n";
         return $mesage;
     }
 }
