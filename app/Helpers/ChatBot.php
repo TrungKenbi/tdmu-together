@@ -145,7 +145,8 @@ if (!function_exists('getWeekTDMU'))
 {
     function getWeekTDMU()
     {
-        return date('W') + 19;
+        return date('W') - 33;
+        // + 19
     }
 }
 
